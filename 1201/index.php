@@ -23,6 +23,5 @@ dump(max($caloriesPerElf));
 // 2
 //////////
 arsort($caloriesPerElf);
-$caloriesPerElf = array_values($caloriesPerElf);
 
 dump(array_sum(array_slice($caloriesPerElf, 0, 3)));
