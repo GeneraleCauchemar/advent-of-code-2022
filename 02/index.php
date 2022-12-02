@@ -4,6 +4,10 @@ declare(strict_types=1);
 
 require_once '../vendor/autoload.php';
 
+const WIN = 6;
+const DRAW = 3;
+const LOSE = 0;
+
 $input = explode(PHP_EOL, file_get_contents('./input.txt'));
 
 ////////////////
@@ -42,29 +46,29 @@ $input = explode(PHP_EOL, file_get_contents('./input.txt'));
 // In this example, if you were to follow the strategy guide, you would get a total score of 15 (8 + 1 + 6).
 //
 // What would your total score be if everything goes exactly according to your strategy guide?
-
+$playValues = [
+    'X' => 1,
+    'Y' => 2,
+    'Z' => 3,
+];
 $outcomes = [
-    'A X' => 3,
-    'A Y' => 6,
-    'A Z' => 0,
-    'B X' => 0,
-    'B Y' => 3,
-    'B Z' => 6,
-    'C X' => 6,
-    'C Y' => 0,
-    'C Z' => 3,
+    'A X' => DRAW,
+    'A Y' => WIN,
+    'A Z' => LOSE,
+    'B X' => LOSE,
+    'B Y' => DRAW,
+    'B Z' => WIN,
+    'C X' => WIN,
+    'C Y' => LOSE,
+    'C Z' => DRAW,
 ];
 
-$results = array_map(function ($value) use ($outcomes) {
+$results = array_map(function ($value) use ($outcomes, $playValues) {
     if (!array_key_exists($value, $outcomes)) {
         return false;
     }
 
-    return $outcomes[$value] + match (substr($value, -1)) {
-            'Z' => 3,
-            'Y' => 2,
-            default => 1,
-        };
+    return $outcomes[$value] + $playValues[substr($value, -1)];
 }, $input);
 
 dump(array_sum($results));
@@ -90,6 +94,11 @@ dump(array_sum($results));
 //
 // Following the Elf's instructions for the second column, what would your total score be if everything goes exactly
 // according to your strategy guide?
+$playValues = [
+    'X' => 0,
+    'Y' => 3,
+    'Z' => 6,
+];
 $strategies = [
     'Z' => [
         'A' => 2,
@@ -108,18 +117,14 @@ $strategies = [
     ],
 ];
 
-$results = array_map(function ($value) use ($strategies) {
+$results = array_map(function ($value) use ($strategies, $playValues) {
     if (empty($value)) {
         return false;
     }
 
     $params = preg_split('/\s+/', $value);
 
-    return $strategies[$params[1]][$params[0]] + match ($params[1]) {
-            'Z' => 6,
-            'Y' => 3,
-            default => 0,
-        };
+    return $strategies[$params[1]][$params[0]] + $playValues[$params[1]];
 }, $input);
 
 dump(array_sum($results));
