@@ -46,6 +46,7 @@ $input = explode(PHP_EOL, file_get_contents('./input.txt'));
 // In this example, if you were to follow the strategy guide, you would get a total score of 15 (8 + 1 + 6).
 //
 // What would your total score be if everything goes exactly according to your strategy guide?
+
 $playValues = [
     'X' => 1,
     'Y' => 2,
@@ -94,6 +95,7 @@ dump(array_sum($results));
 //
 // Following the Elf's instructions for the second column, what would your total score be if everything goes exactly
 // according to your strategy guide?
+
 $playValues = [
     'X' => 0,
     'Y' => 3,
