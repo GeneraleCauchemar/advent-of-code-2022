@@ -20,6 +20,9 @@ abstract class AbstractConundrumSolver implements ConundrumSolverInterface
         $this->separator = $separator;
     }
 
+    /**
+     * @throws InputFileNotFoundException
+     */
     public function execute(): array
     {
         $path = sprintf('%s/../../Resources/input/%s.txt', __DIR__, $this->day);

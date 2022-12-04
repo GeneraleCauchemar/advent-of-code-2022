@@ -28,4 +28,4 @@ Just run:
 $ (symfony) php application.php app:resolve-conundrums 1
 ```
 
-With the day's number as the only argument (both 1 and 01 are valid options).
+With the day's number as the only argument (both `1` and `01` are valid options).
