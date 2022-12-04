@@ -69,7 +69,7 @@ class Day01ConundrumSolver extends AbstractConundrumSolver
     // Find the Elf carrying the most Calories. How many total Calories is that Elf carrying?
     public function partOne(): mixed
     {
-        foreach ($this->input as $data) {
+        foreach ($this->getInput() as $data) {
             $this->caloriesPerElf[] = explode(PHP_EOL, $data);
         }
 

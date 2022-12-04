@@ -70,7 +70,7 @@ class Day03ConundrumSolver extends AbstractConundrumSolver
             );
 
             return $this->getNumericValueForLetter(reset($common));
-        }, $this->input);
+        }, $this->getInput());
 
         return array_sum($output);
     }
@@ -125,7 +125,7 @@ class Day03ConundrumSolver extends AbstractConundrumSolver
             );
 
             return $this->getNumericValueForLetter(reset($badge));
-        }, array_chunk($this->input, 3));
+        }, array_chunk($this->getInput(), 3));
 
         return array_sum($output);
     }

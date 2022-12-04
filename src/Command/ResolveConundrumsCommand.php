@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace App\Command;
 
 use App\Conundrum\AbstractConundrumSolver;
+use App\Exception\SolverNotFoundException;
 use Symfony\Component\Console\Attribute\AsCommand;
 use Symfony\Component\Console\Command\Command;
 use Symfony\Component\Console\Input\InputArgument;
@@ -27,7 +28,7 @@ class ResolveConundrumsCommand extends Command
     {
         try {
             /** @var AbstractConundrumSolver $conundrumSolver */
-            $conundrumSolver = $this->getInstanceForDay($input->getArgument('day'));
+            $conundrumSolver = $this->getSolverForDay($input->getArgument('day'));
             $result = $conundrumSolver->execute();
 
             $output->writeln(
@@ -46,14 +47,16 @@ class ResolveConundrumsCommand extends Command
         }
     }
 
-    private function getInstanceForDay(string $argument)
+    private function getSolverForDay(string $argument)
     {
         $day = $this->getDay($argument);
         $className = 'App\\Conundrum\\Day'.$day.'ConundrumSolver';
 
         return class_exists($className) ?
             new $className($day) :
-            throw new \Exception(sprintf('<error>There is no service to solve day %s yet!</error>', $argument));
+            throw new SolverNotFoundException(
+                sprintf('<error>There is no solver available for day %s!</error>', $argument)
+            );
     }
 
     private function getDay(string $day): string

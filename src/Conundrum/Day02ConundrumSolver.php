@@ -90,7 +90,7 @@ class Day02ConundrumSolver extends AbstractConundrumSolver
         $tacticalScores = self::MOVE_SCORE;
         $scores = array_map(function ($value) use ($outcomes, $tacticalScores) {
             return $outcomes[$value] + $tacticalScores[substr($value, -1)];
-        }, $this->input);
+        }, $this->getInput());
 
         return array_sum($scores);
     }
@@ -141,7 +141,7 @@ class Day02ConundrumSolver extends AbstractConundrumSolver
             $params = preg_split('/\s+/', $value);
 
             return $strategies[$params[1]][$params[0]] + $tacticalScores[$params[1]];
-        }, $this->input);
+        }, $this->getInput());
 
         return array_sum($results);
     }
