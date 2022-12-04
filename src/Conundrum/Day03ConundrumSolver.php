@@ -113,7 +113,6 @@ class Day03ConundrumSolver extends AbstractConundrumSolver
     //
     // Find the item type that corresponds to the badges of each three-Elf group. What is the sum of the priorities of those
     // item types?
-
     public function partTwo(): mixed
     {
         // For each group of three elves, finds the common item and returns its value
