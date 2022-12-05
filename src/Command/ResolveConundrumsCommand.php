@@ -58,7 +58,14 @@ class ResolveConundrumsCommand extends Command
             );
 
             $io->text([
-                '<christmas_red>'.strtoupper(sprintf(' December %s %s ', $this->day, $this->year)).'</>',
+                sprintf(
+                    '<christmas_red>%s</>',
+                    str_pad(
+                        strtoupper(sprintf(' December %s %s ', $this->day, $this->year)),
+                        Helper::width(Helper::removeDecoration($io->getFormatter(), $result)),
+                        ' '
+                    )
+                ),
                 $banner,
                 $result,
                 $banner,
@@ -106,11 +113,10 @@ class ResolveConundrumsCommand extends Command
 
     private function formatResultForDisplay(array $result): string
     {
-        $line = explode('|', ' Solution | to | part | one | is | %s | and | solution | to | part | two | is | %s | . ');
+        $line = explode('|', ' Solution | to | part | one | is | %s | and | solution | to | part | two | is | %s |.');
 
         array_walk($line, function (&$word, $key) {
             $format = '<christmas_';
-
             $format .= match (true) {
                 str_contains($word, '%s') => 'green>',
                 !($key & 1) => 'red>',
@@ -120,6 +126,6 @@ class ResolveConundrumsCommand extends Command
             $word = sprintf('%s%s</>', $format, $word);
         });
 
-        return '<christmas_white> </>'.sprintf(implode('', $line), ...$result);
+        return '<christmas_white> 🎄 </>'.sprintf(implode('', $line), ...$result).'<christmas_white> 🎄 </>';
     }
 }

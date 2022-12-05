@@ -201,12 +201,14 @@ class Day05ConundrumSolver extends AbstractConundrumSolver
 
     private function computeMoves()
     {
-        $this->moves = array_map(function ($value) {
-            return explode(' ', $value);
-        },
+        $this->moves = array_map(
+            function ($value) {
+                return explode(' ', $value);
+            },
             array_filter(
                 explode(PHP_EOL, str_ireplace(['move ', 'from ', 'to '], '', $this->moves))
-            ));
+            )
+        );
     }
 
     private function writeOutput(array $cratePiles): string
