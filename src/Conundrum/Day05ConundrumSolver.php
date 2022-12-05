@@ -88,6 +88,7 @@ class Day05ConundrumSolver extends AbstractConundrumSolver
     // After the rearrangement procedure completes, what crate ends up on top of each stack?
     public function partOne(): mixed
     {
+        // Init values
         [$this->cratePiles, $this->moves] = $this->getInput();
 
         $this->computeCratePiles();
@@ -95,19 +96,15 @@ class Day05ConundrumSolver extends AbstractConundrumSolver
 
         // Let's keep them global values nice and tidy, shall we...
         $localPiles = $this->cratePiles;
-        $output = '';
 
         foreach ($this->moves as [$move, $from, $to]) {
+            // Move to pile 'A' the last crate from pile 'B', n times
             for ($i = 0; $i < $move; $i++) {
                 $localPiles[$to][] = array_pop($localPiles[$from]);
             }
         }
 
-        array_walk($localPiles, function ($crates) use (&$output) {
-            $output .= end($crates);
-        });
-
-        return $output;
+        return $this->writeOutput($localPiles);
     }
 
     ////////////////
@@ -169,17 +166,13 @@ class Day05ConundrumSolver extends AbstractConundrumSolver
     public function partTwo(): mixed
     {
         $localPiles = $this->cratePiles;
-        $output = '';
 
         foreach ($this->moves as [$move, $from, $to]) {
+            // Push to pile 'A' the n last crates from pile 'B'
             array_push($localPiles[$to], ...array_splice($localPiles[$from], -$move));
         }
 
-        array_walk($localPiles, function ($crates) use (&$output) {
-            $output .= end($crates);
-        });
-
-        return $output;
+        return $this->writeOutput($localPiles);
     }
 
     private function computeCratePiles()
@@ -214,5 +207,14 @@ class Day05ConundrumSolver extends AbstractConundrumSolver
             array_filter(
                 explode(PHP_EOL, str_ireplace(['move ', 'from ', 'to '], '', $this->moves))
             ));
+    }
+
+    private function writeOutput(array $cratePiles): string
+    {
+        array_walk($cratePiles, function ($crates) use (&$output) {
+            $output .= end($crates);
+        });
+
+        return $output ?? '';
     }
 }
