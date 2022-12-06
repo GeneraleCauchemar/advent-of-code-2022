@@ -10,14 +10,19 @@ abstract class AbstractConundrumSolver implements ConundrumSolverInterface
 {
     protected const UNDETERMINED = 'to be determined';
 
-    private array $input;
+    private array|string $input;
     private string $day;
     private string $separator;
+    private bool $keepAsString;
 
-    public function __construct(string $day, string $separator = PHP_EOL)
-    {
+    public function __construct(
+        string $day,
+        string $separator = PHP_EOL,
+        bool $keepAsString = false
+    ) {
         $this->day = $day;
         $this->separator = $separator;
+        $this->keepAsString = $keepAsString;
     }
 
     /**
@@ -31,7 +36,9 @@ abstract class AbstractConundrumSolver implements ConundrumSolverInterface
             throw new InputFileNotFoundException(sprintf('<error>Missing input file at path "%s".</error>', $path));
         }
 
-        $this->input = array_filter(explode($this->separator, file_get_contents($path)));
+        $this->input = $this->keepAsString ?
+            trim(file_get_contents($path)) :
+            array_filter(explode($this->separator, file_get_contents($path)));
 
         return [
             $this->partOne(),
@@ -49,7 +56,7 @@ abstract class AbstractConundrumSolver implements ConundrumSolverInterface
         return self::UNDETERMINED;
     }
 
-    protected function getInput(): array
+    protected function getInput(): array|string
     {
         return $this->input;
     }
