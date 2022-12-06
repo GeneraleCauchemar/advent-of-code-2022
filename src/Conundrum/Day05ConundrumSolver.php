@@ -178,20 +178,20 @@ class Day05ConundrumSolver extends AbstractConundrumSolver
     private function computeCratePiles()
     {
         $this->cratePiles = explode(PHP_EOL, $this->cratePiles);
-        $localPiles = array_fill_keys(
-            array_filter(preg_split('/\s+/', array_pop($this->cratePiles))),
-            []
-        );
-        $keysFromOffset = array_combine(range(1, 33, 4), range(1, 9));
         $this->cratePiles = array_reverse($this->cratePiles);
 
+        // Extracts the pile keys from the input
+        $pileKeys = array_filter(preg_split('/\s+/', array_shift($this->cratePiles)));
+        $keysFromOffset = array_combine(range(1, 33, 4), $pileKeys);
+        $localPiles = array_fill_keys($pileKeys, []);
+
+        // Moves each crate to the proper pile in the array
         array_walk($this->cratePiles, function ($value) use ($keysFromOffset, &$localPiles) {
-            // - Uses a REGEX to find every crate name and its offset
-            // - Determines the key from the offset and puts all crates in the right pile
+            // Uses a REGEX to find every crate name and its offset
             preg_match_all('/\[([^]]*)]/', $value, $crates, PREG_OFFSET_CAPTURE);
 
-            foreach ($crates[1] as $values) {
-                [$crate, $offset] = $values;
+            // Determines the key from the offset and puts all crates in the right pile
+            foreach ($crates[1] as [$crate, $offset]) {
                 $localPiles[$keysFromOffset[$offset]][] = $crate;
             }
         });
@@ -201,14 +201,9 @@ class Day05ConundrumSolver extends AbstractConundrumSolver
 
     private function computeMoves()
     {
-        $this->moves = array_map(
-            function ($value) {
-                return explode(' ', $value);
-            },
-            array_filter(
-                explode(PHP_EOL, str_ireplace(['move ', 'from ', 'to '], '', $this->moves))
-            )
-        );
+        $this->moves = array_map(function ($value) {
+            return explode(' ', $value);
+        }, array_filter(explode(PHP_EOL, str_ireplace(['move ', 'from ', 'to '], '', $this->moves))));
     }
 
     private function writeOutput(array $cratePiles): string
