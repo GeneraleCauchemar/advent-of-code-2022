@@ -165,6 +165,10 @@ class Day08ConundrumSolver extends AbstractConundrumSolver
         return max($scores);
     }
 
+    ////////////////
+    // METHODS
+    ////////////////
+
     private function isEdgeTree(int $horizontal, int $vertical): bool
     {
         return (in_array($horizontal, [$this->leftEdgeKey, $this->rightEdgeKey])) ||

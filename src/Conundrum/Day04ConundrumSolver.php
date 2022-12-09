@@ -108,6 +108,10 @@ class Day04ConundrumSolver extends AbstractConundrumSolver
         return count($output);
     }
 
+    ////////////////
+    // METHODS
+    ////////////////
+
     private function setSpreadRanges()
     {
         $this->spreadRanges = array_map(function ($value) {

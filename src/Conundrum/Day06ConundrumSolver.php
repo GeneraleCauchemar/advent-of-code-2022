@@ -88,6 +88,10 @@ class Day06ConundrumSolver extends AbstractConundrumSolver
         return $this->solve(14);
     }
 
+    ////////////////
+    // METHODS
+    ////////////////
+
     private function solve(int $markerLength): string
     {
         $buffer = [];

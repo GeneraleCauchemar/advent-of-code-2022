@@ -129,6 +129,10 @@ class Day03ConundrumSolver extends AbstractConundrumSolver
         return array_sum($output);
     }
 
+    ////////////////
+    // METHODS
+    ////////////////
+
     // Compute the value using the ASCII table
     private function getNumericValueForLetter(string $letter): int
     {

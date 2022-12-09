@@ -11,11 +11,12 @@ class Day09ConundrumSolver extends AbstractConundrumSolver
     private const RIGHT = 'R';
     private const LEFT = 'L';
     private const DOWN = 'D';
+    private const PART_1 = 1;
+    private const PART_2 = 2;
+    private const ROPE_LENGTH = [self::PART_1 => 2, self::PART_2 => 10];
 
-    private array $visited = [];
-    private array $hLastMove = [];
-    private array $posH = ['x' => 0, 'y' => 0];
-    private array $posT = ['x' => 0, 'y' => 0];
+    private array $visited = [self::PART_1 => [], self::PART_2 => []];
+    private array $positions = [];
 
     public function __construct(string $folder)
     {
@@ -290,16 +291,16 @@ class Day09ConundrumSolver extends AbstractConundrumSolver
     {
         $input = $this->getInput();
 
+        $this->initPositions(1);
+
         array_walk($input, function ($instruction) {
             [$direction, $moves] = explode(' ', $instruction);
 
-            // Resets H last move because we're changing direction then moves the rope
-            $this->hLastMove = [];
-            $this->computeMoves((int) $moves, $direction);
+            $this->computeMoves(self::PART_1, (int) $moves, $direction);
         });
 
         // Count only unique positions
-        return count(array_unique($this->visited, SORT_REGULAR));
+        return count(array_unique($this->visited[self::PART_1], SORT_REGULAR));
     }
 
     ////////////////
@@ -748,30 +749,56 @@ class Day09ConundrumSolver extends AbstractConundrumSolver
     // rope visit at least once?
     public function partTwo(): mixed
     {
-        return parent::partTwo();
+        $input = $this->getInput();
+
+        $this->initPositions(9);
+
+        array_walk($input, function ($instruction) {
+            [$direction, $moves] = explode(' ', $instruction);
+
+            $this->computeMoves(self::PART_2, (int) $moves, $direction);
+        });
+
+        // Count only unique positions
+        return count(array_unique($this->visited[self::PART_2], SORT_REGULAR));
     }
 
-    private function computeMoves(int $moves, string $direction)
+    ////////////////
+    // METHODS
+    ////////////////
+
+    private function initPositions(int $rangeEnd)
+    {
+        $this->positions = array_fill_keys(range(0, $rangeEnd), ['x' => 0, 'y' => 0]);
+    }
+
+    private function computeMoves(int $part, int $moves, string $direction)
     {
         for ($i = 0; $i < $moves; $i++) {
-            $this->saveVisitedCoordinates();
-            $this->moveH($direction);
+            $this->saveVisitedCoordinates($part);
 
-            // T only moves if it is not touching H anymore
-            if (!$this->areTouching()) {
-                $this->moveT();
+            for ($j = 0; $j < self::ROPE_LENGTH[$part]; $j++) {
+                $this->move($part, $j, $direction);
             }
         }
     }
 
-    private function moveH(string $direction)
+    private function move(int $part, int $knotMarker, string $direction)
     {
-        // Keeps move for later use and moves H
-        $this->hLastMove = [$axis, $modifier] = $this->computeMoveForH($direction);
-        $this->posH[$axis] += $modifier;
+        if (0 === $knotMarker) {
+            $this->moveHead($direction);
+        } elseif (!$this->areTouching($knotMarker)) {
+            $this->moveFollowingKnot($part, $knotMarker);
+        }
     }
 
-    private function computeMoveForH(string $direction): array
+    private function moveHead(string $direction)
+    {
+        [$axis, $modifier] = $this->computeMoveForHead($direction);
+        $this->positions[array_key_first($this->positions)][$axis] += $modifier;
+    }
+
+    private function computeMoveForHead(string $direction): array
     {
         return match ($direction) {
             self::UP => ['y', -1],
@@ -781,38 +808,53 @@ class Day09ConundrumSolver extends AbstractConundrumSolver
         };
     }
 
-    private function moveT()
+    private function moveFollowingKnot(int $part, int $knotMarker)
     {
-        foreach ($this->computeMoveForT() as [$axis, $modifier]) {
-            $this->posT[$axis] += $modifier;
+        foreach ($this->computeMoveForKnot($knotMarker) as [$axis, $modifier]) {
+            $this->positions[$knotMarker][$axis] += $modifier;
         }
 
-        $this->saveVisitedCoordinates();
+        // Last knot, save new coordinates
+        if (9 === $knotMarker) {
+            $this->saveVisitedCoordinates($part);
+        }
     }
 
-    private function computeMoveForT(): array
+    private function computeMoveForKnot(int $knotMarker): array
     {
-        // If both x and y positions are different, move diagonally
-        if ($this->posT['x'] !== $this->posH['x'] && $this->posT['y'] !== $this->posH['y']) {
+        $a = $this->positions[$knotMarker - 1];
+        $b = $this->positions[$knotMarker];
+
+        if ($this->moveDiagonally($a, $b)) {
             return [
-                ['x', 0 < ($this->posH['x'] - $this->posT['x']) ? 1 : -1],
-                ['y', 0 < ($this->posH['y'] - $this->posT['y']) ? 1 : -1],
+                ['x', 0 < ($a['x'] - $b['x']) ? 1 : -1],
+                ['y', 0 < ($a['y'] - $b['y']) ? 1 : -1],
             ];
         }
 
-        // If not, we'll move the same way H did
-        return [$this->hLastMove];
+        if ($a['y'] === $b['y'] && 2 === abs($a['x'] - $b['x'])) {
+            return [['x', $a['x'] > $b['x'] ? 1 : -1]];
+        }
+
+        return [['y', $a['y'] > $b['y'] ? 1 : -1]];
     }
 
-    private function areTouching(): bool
+    private function areTouching(int $knotMarker): bool
     {
-        // H and T are touching if their x and y positions are equal or exactly 1 apart, positively or negatively
-        return ($this->posH['x'] === $this->posT['x'] || 1 === abs($this->posH['x'] - $this->posT['x'])) &&
-            ($this->posH['y'] === $this->posT['y'] || 1 === abs($this->posH['y'] - $this->posT['y']));
+        $a = $this->positions[$knotMarker - 1];
+        $b = $this->positions[$knotMarker];
+
+        return ($a['x'] === $b['x'] || 1 === abs($a['x'] - $b['x'])) &&
+            ($a['y'] === $b['y'] || 1 === abs($a['y'] - $b['y']));
     }
 
-    private function saveVisitedCoordinates()
+    private function saveVisitedCoordinates(int $part)
     {
-        $this->visited[] = $this->posT;
+        $this->visited[$part][] = $this->positions[array_key_last($this->positions)];
+    }
+
+    private function moveDiagonally(array $a, array $b): bool
+    {
+        return $b['x'] !== $a['x'] && $b['y'] !== $a['y'];
     }
 }

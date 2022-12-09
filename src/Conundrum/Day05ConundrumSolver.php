@@ -175,6 +175,10 @@ class Day05ConundrumSolver extends AbstractConundrumSolver
         return $this->writeOutput($localPiles);
     }
 
+    ////////////////
+    // METHODS
+    ////////////////
+
     private function computeCratePiles()
     {
         $this->cratePiles = explode(PHP_EOL, $this->cratePiles);
