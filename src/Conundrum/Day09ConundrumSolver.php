@@ -11,11 +11,9 @@ class Day09ConundrumSolver extends AbstractConundrumSolver
     private const RIGHT = 'R';
     private const LEFT = 'L';
     private const DOWN = 'D';
-    private const PART_1 = 1;
-    private const PART_2 = 2;
-    private const ROPE_LENGTH = [self::PART_1 => 2, self::PART_2 => 10];
+    private const ROPE_LENGTH = [self::PART_ONE => 2, self::PART_TWO => 10];
 
-    private array $visited = [self::PART_1 => [], self::PART_2 => []];
+    private array $visited = [self::PART_ONE => [], self::PART_TWO => []];
     private array $positions = [];
 
     public function __construct(string $folder)
@@ -296,11 +294,11 @@ class Day09ConundrumSolver extends AbstractConundrumSolver
         array_walk($input, function ($instruction) {
             [$direction, $moves] = explode(' ', $instruction);
 
-            $this->computeMoves(self::PART_1, (int) $moves, $direction);
+            $this->computeMoves(self::PART_ONE, (int) $moves, $direction);
         });
 
         // Count only unique positions
-        return count(array_unique($this->visited[self::PART_1], SORT_REGULAR));
+        return count(array_unique($this->visited[self::PART_ONE], SORT_REGULAR));
     }
 
     ////////////////
@@ -756,11 +754,11 @@ class Day09ConundrumSolver extends AbstractConundrumSolver
         array_walk($input, function ($instruction) {
             [$direction, $moves] = explode(' ', $instruction);
 
-            $this->computeMoves(self::PART_2, (int) $moves, $direction);
+            $this->computeMoves(self::PART_TWO, (int) $moves, $direction);
         });
 
         // Count only unique positions
-        return count(array_unique($this->visited[self::PART_2], SORT_REGULAR));
+        return count(array_unique($this->visited[self::PART_TWO], SORT_REGULAR));
     }
 
     ////////////////

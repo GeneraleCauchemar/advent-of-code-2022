@@ -9,8 +9,11 @@ use App\Exception\InputFileNotFoundException;
 abstract class AbstractConundrumSolver implements ConundrumSolverInterface
 {
     protected const UNDETERMINED = 'to be determined';
+    protected const PART_ONE = 1;
+    protected const PART_TWO = 2;
 
     private array|string $input;
+    private array $testInputs;
     private string $day;
     private string $separator;
     private bool $keepAsString;
@@ -30,15 +33,8 @@ abstract class AbstractConundrumSolver implements ConundrumSolverInterface
      */
     public function execute(): array
     {
-        $path = sprintf('%s/../../Resources/input/%s.txt', __DIR__, $this->day);
-
-        if (!file_exists($path)) {
-            throw new InputFileNotFoundException(sprintf('<error>Missing input file at path "%s".</error>', $path));
-        }
-
-        $this->input = $this->keepAsString ?
-            trim(file_get_contents($path)) :
-            array_filter(explode($this->separator, file_get_contents($path)));
+        $this->initInput();
+        $this->initTestInputs();
 
         return [
             $this->partOne(),
@@ -59,5 +55,56 @@ abstract class AbstractConundrumSolver implements ConundrumSolverInterface
     protected function getInput(): array|string
     {
         return $this->input;
+    }
+
+    protected function getTestInput(int $part)
+    {
+        if (array_key_exists($part, $this->testInputs)) {
+            return $this->testInputs[$part];
+        }
+
+        return [];
+    }
+
+    private function initInput()
+    {
+        $path = sprintf('%s/../../Resources/input/%s.txt', __DIR__, $this->day);
+
+        if (!file_exists($path)) {
+            throw new InputFileNotFoundException(sprintf('<error>Missing input file at path "%s".</error>', $path));
+        }
+
+        $this->input = $this->keepAsString ?
+            trim(file_get_contents($path)) :
+            array_filter(explode($this->separator, file_get_contents($path)));
+    }
+
+    private function initTestInputs()
+    {
+        $this->testInputs = [];
+        $partialPath = '%s/../../Resources/input/test/%s_%s.txt';
+        $paths = [
+            self::PART_ONE => sprintf($partialPath, __DIR__, $this->day, '0'.self::PART_ONE),
+            self::PART_TWO => sprintf($partialPath, __DIR__, $this->day, '0'.self::PART_TWO),
+        ];
+
+        foreach ($paths as $part => $path) {
+            if (!file_exists($path)) {
+                continue;
+            }
+
+            $this->testInputs[$part] = array_filter(explode($this->separator, file_get_contents($path)));
+        }
+
+        if (empty($this->testInputs)) {
+            $path = sprintf(str_replace('_%s', '', $partialPath), __DIR__, $this->day);
+
+            if (file_exists($path)) {
+                $this->testInputs = array_fill_keys(
+                    [self::PART_ONE, self::PART_TWO],
+                    array_filter(explode($this->separator, file_get_contents($path)))
+                );
+            }
+        }
     }
 }
