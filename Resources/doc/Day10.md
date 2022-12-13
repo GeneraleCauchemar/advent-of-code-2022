@@ -1,4 +1,4 @@
-# Day 10
+# --- Day 10: Cathode-Ray Tube ---
 
 ## PART 1
 

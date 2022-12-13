@@ -8,19 +8,19 @@ use App\Exception\InputFileNotFoundException;
 
 abstract class AbstractConundrumSolver implements ConundrumSolverInterface
 {
+    public const PART_ONE = 1;
+    public const PART_TWO = 2;
     protected const UNDETERMINED = 'to be determined';
-    protected const PART_ONE = 1;
-    protected const PART_TWO = 2;
 
     private array|string $input;
     private array $testInputs;
     private string $day;
-    private string $separator;
+    private ?string $separator;
     private bool $keepAsString;
 
     public function __construct(
         string $day,
-        string $separator = PHP_EOL,
+        ?string $separator = PHP_EOL,
         bool $keepAsString = false
     ) {
         $this->day = $day;
@@ -57,7 +57,7 @@ abstract class AbstractConundrumSolver implements ConundrumSolverInterface
         return $this->input;
     }
 
-    protected function getTestInput(int $part)
+    protected function getTestInput(int $part = self::PART_ONE)
     {
         if (array_key_exists($part, $this->testInputs)) {
             return $this->testInputs[$part];
@@ -93,7 +93,9 @@ abstract class AbstractConundrumSolver implements ConundrumSolverInterface
                 continue;
             }
 
-            $this->testInputs[$part] = array_filter(explode($this->separator, file_get_contents($path)));
+            $this->testInputs[$part] = $this->keepAsString ?
+                trim(file_get_contents($path)) :
+                array_filter(explode($this->separator, file_get_contents($path)));
         }
 
         if (empty($this->testInputs)) {
@@ -102,7 +104,9 @@ abstract class AbstractConundrumSolver implements ConundrumSolverInterface
             if (file_exists($path)) {
                 $this->testInputs = array_fill_keys(
                     [self::PART_ONE, self::PART_TWO],
-                    array_filter(explode($this->separator, file_get_contents($path)))
+                    $this->keepAsString ?
+                        trim(file_get_contents($path)) :
+                        array_filter(explode($this->separator, file_get_contents($path)))
                 );
             }
         }
